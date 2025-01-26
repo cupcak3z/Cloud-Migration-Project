@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div align="center">
+        <h1>Add Profile / See Records</h1>
+        First name:
+        <br>
+        <input type="text" name="firstname" id="custFirstName">
+        <br> Last name:
+        <br>
+        <input type="text" name="lastname" id="custLastName">
+        <br> Email:
+        <br>
+        <input type="text" name="email" id="custEmail">
+        <br>
+        <br>
+        <input type="submit" id="saverecord" value="Save Record">
+        <br>
+        <p id="recordSaved"></p>
+        <br>
+        <input type="submit" id="getrecord" value="View all Records">
+        <br>
+        <div id="showRecord">
+            <table id="Records">
+                <colgroup>
+                    <col style="width:33%">
+                    <col style="width:33%">
+                    <col style="width:33%">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th>First name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // Define your API endpoints here
+        var API_ENDPOINT = "https://t8cvps6en6.execute-api.us-east-1.amazonaws.com/prod";
+                
+        // AJAX POST REQUEST
+        document.getElementById("saverecord").onclick = function() {
+            var inputData = {
+                custFirstName: $('#custFirstName').val(),
+                custLastName: $('#custLastName').val(),
+                custEmail: $('#custEmail').val()
+            };
+            $.ajax({
+                url: API_ENDPOINT,
+                type: 'POST',
+                data: JSON.stringify(inputData),
+                contentType: 'application/json; charset=utf-8',
+                success: function(response) {
+                    document.getElementById("recordSaved").innerHTML = "Record Saved!";
+                },
+                error: function() {
+                    alert("Error saving record.");
+                }
+            });
+        }
+
+        // AJAX GET REQUEST
+        document.getElementById("getrecord").onclick = function() {
+            $.ajax({
+                url: API_ENDPOINT,
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                success: function(response) {
+                    $('#Records tr').slice(1).remove();
+                    jQuery.each(response, function(i, data) {
+                        $("#Records").append("<tr> \
+                            <td>" + data['custFirstName'] + "</td> \
+                            <td>" + data['custLastName'] + "</td> \
+                            <td>" + data['custEmail'] + "</td> \
+                            </tr>");
+                    });
+                },
+                error: function() {
+                    alert("Error retrieving records.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
